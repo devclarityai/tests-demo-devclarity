@@ -2,64 +2,79 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repo purpose
+## Overview
+- Playwright (TypeScript) test suite targeting the **Demo DevClarity** app, a Rails-based application served at `http://localhost:3001` by default
+- Test types: UI E2E (clients, projects, calendar, auth) and HTTP-level API tests (`tests/api/`)
+- Target environments: local Rails server; `BASE_URL` is read from `.playwright.env` (or the file pointed to by `ENV_PATH`)
+- Critical flows validated: login/session, client CRUD, project CRUD, weekly calendar view
 
-Playwright (TypeScript) E2E and API tests against the Demo DevClarity Rails app. There is no application source here, tests only.
+## Test Levels & Coverage Shape
+- E2E UI tests dominate; a small API layer covers session/CSRF endpoints directly via `request` fixture
+- API session spec opts out of stored auth with `test.use({ storageState: { cookies: [], origins: [] } })`
+- Known product bugs are encoded as `test.skip("BUG-N: ...")` placeholders in the relevant spec until the app is fixed
+- No unit, visual, or performance layers in this repo
 
-## Commands
+## Architecture & Patterns
+- `tests/<feature>/` holds spec files, one feature area per folder (`auth`, `api`, `clients`, `projects`, `calendar`, `resources`, `setup`)
+- `lib/pages/` is a classic Page Object Model. Each page exposes locator fields and small action/flow methods. Use these instead of inline selectors
+- `lib/datafactory/` (`client.factory.ts`, `project.factory.ts`) creates and deletes records through the UI and returns IDs - call these for arrange/teardown rather than crafting fixtures by hand
+- `lib/fixtures/test-data.ts` holds shared constants (`testUsers`, `testProjects`, `testClients`, `testResources`). `testUsers.admin` and `testUsers.testUser` both read `ADMIN_EMAIL`/`ADMIN_PASSWORD` from env
+- `lib/helpers/`:
+  - `auth.helper.ts` — programmatic login via `LoginPage`
+  - `csrf.helper.ts` — scrapes the Rails `authenticity_token` from a form page before posting
+  - `clickAndGetAPIData.ts` — pairs a click with `waitForResponse` and captures both request and response
+  - `arrays.ts` — small array utilities
+- TypeScript path aliases (defined in `tsconfig.json`): `@pages/*`, `@datafactory/*`, `@helpers/*`, `@fixtures/*`. Always import via these, not relative paths
 
-- `npm install && npx playwright install` - one time setup
-- `npm run test:e2e` - run all tests (chromium only by default)
-- `npm run test:e2e:headed` / `:ui` / `:debug` - headed, UI mode, debug mode
-- `npm run test:e2e:report` - open the last HTML report
-- `npx playwright test tests/clients/clients.spec.ts` - run a single spec file
-- `npx playwright test -g "create client with valid name"` - run a single test by title
-- `npx playwright test --project=chromium` - run only the chromium project (skip setup project)
+## Stack Best Practices
+- Playwright `@playwright/test` ^1.60; Node 24, TypeScript 5
+- Locator strategy: prefer `getByRole`, `getByLabel`, and `getByText`. CSS only when DOM has no semantic hook (e.g. `locator("tbody")` for the rows scope)
+- All page objects expose locators as readonly fields built off `this.page` - mirror that pattern when adding new pages
+- Rely on web-first assertions (`toBeVisible`, `toHaveURL`, `toHaveValue`). No `waitForTimeout` except the deliberate 1s warm-up in `clickAndGetAPIData`
+- Rails delete buttons trigger a native confirm dialog - register `page.once("dialog", d => d.accept())` immediately before the click
+- For Rails form validation tests, call `formPage.disableHtml5Validation()` so the server-side error path is exercised
+- Single worker, zero retries (see `playwright.config.ts`). Tests must be independent and clean up after themselves
 
-## Environment
+## Anti-Patterns
+- Do not import via relative paths when an `@pages` / `@helpers` / `@fixtures` / `@datafactory` alias exists
+- Do not create test data with raw SQL or seeds - go through the factory functions so the UI path stays exercised
+- Do not hardcode the admin credentials or `BASE_URL` - read from env via `testUsers` or `process.env`
+- Do not leave records behind. Every `createClient` / `createProject` must have a matching delete (the factories provide `deleteClient` / `deleteProject`)
+- Do not branch with `if/else` around assertions - assert the expected state directly
+- Do not enable browsers other than chromium in `playwright.config.ts` without coordinating; the others are intentionally commented out
 
-`playwright.config.ts` loads env vars via `loadEnvFile()` from `./.playwright.env` (or `$ENV_PATH` if set). Required keys: `BASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`. See `.playwright.env.example`. Default `BASE_URL` falls back to `http://localhost:3001`.
+## Test Layout Conventions
+- Spec naming: `<feature>.spec.ts` under the matching `tests/<feature>/` folder; setup files use `.setup.ts` and are picked up by the `setup` project via `testMatch: /.*\.setup\.ts/`
+- Group tests inside a spec with `// ---- HAPPY PATH ----`, `// ---- EDGE CASES ----`, `// ---- NEGATIVE / ERROR TESTS ----`, `// ---- BUG TESTS ----` banner comments (see `tests/clients/clients.spec.ts`)
+- Known-broken behavior is captured as `test.skip("BUG-N: ...", ...)` with an `Expected` vs `Actual` comment block inside the body
+- Unique names for created records use `` `${prefix} ${Date.now()}` `` to avoid collisions across parallel runs
 
-## Architecture
+## Test Data Hygiene
+- Generate test data through `lib/datafactory/*` (UI-driven, returns the new ID). Delete via the same factory before the test ends
+- Some specs reference seeded records by hard-coded ID/name (e.g. `CLOUD_BRIDGE_ID = 2`, `CLOUD_BRIDGE_NAME = "CloudBridge Systems"`). These rely on the app's default seed data - do not delete them
+- Env vars live in `.playwright.env` (gitignored). `.playwright.env.example` documents the required keys: `BASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+- `playwright.config.ts` calls `loadEnvFile(process.env.ENV_PATH ?? "./.playwright.env")` at startup
+- The `.auth/` directory holds the persisted login storage state and is gitignored
 
-### Auth via storage state
+## Authentication & Session Handling
+- `tests/setup/auth.setup.ts` runs once as the `setup` project: it logs in with `testUsers.testUser`, asserts the session landed, and writes `.auth/user.json` via `context.storageState`
+- The `chromium` project depends on `setup` and applies `storageState: ".auth/user.json"`, so every UI spec starts already authenticated
+- API tests that must hit unauthenticated endpoints opt out per-spec with `test.use({ storageState: { cookies: [], origins: [] } })` and obtain a CSRF token via `getCsrfToken()` before POSTing
+- Credentials only come from `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars - never hardcode
 
-`tests/setup/auth.setup.ts` runs as the `setup` Playwright project. It logs in once using `LoginPage`, then writes the session to `.auth/user.json`. The `chromium` project declares `dependencies: ["setup"]` and `storageState: ".auth/user.json"`, so every spec starts already authenticated.
+## Test Reporters & Metrics
+- Reporters: `html` (written to `playwright-report/`, never auto-opens) and `list`
+- `screenshot`, `video`, and `trace` are all set to `"on"` - every run records full artifacts to `test-results/`. Keep this in mind on long suites
+- View the last report with `npm run test:e2e:report`
 
-API specs that need an unauthenticated context override this with `test.use({ storageState: { cookies: [], origins: [] } })` (see `tests/api/session.api.spec.ts`). Rails CSRF tokens are scraped from the login form via `lib/helpers/csrf.helper.ts`.
-
-### Page Object Model + factories
-
-- `lib/pages/*.page.ts` - one class per page. Locators declared as readonly fields on the class; flow methods compose them. Pattern: `getRowByName(name)`, `getViewLinkForClient(name)`, etc.
-- `lib/datafactory/*.factory.ts` - `createClient(page, name)` / `deleteClient(page, id)` style helpers used to set up and tear down state inside tests. These drive the UI (not the API) and return the created row's numeric ID parsed out of the redirect URL.
-- `lib/fixtures/test-data.ts` - centralized test users / projects / clients constants. `testUsers.testUser` reads `ADMIN_EMAIL` / `ADMIN_PASSWORD` from env.
-- `lib/helpers/` - cross-cutting utilities (csrf, auth, arrays, request interception).
-
-### TypeScript path aliases
-
-`tsconfig.json` defines:
-
-- `@pages/*` -> `./lib/pages/*`
-- `@datafactory/*` -> `./lib/datafactory/*`
-- `@fixtures/*` -> `./lib/fixtures/*`
-- `@helpers/*` -> `./lib/helpers/*`
-
-Use these aliases in imports rather than relative paths.
-
-### Test layout convention
-
-Specs are grouped by feature area under `tests/<feature>/<feature>.spec.ts` (clients, projects, calendar, resources). API specs live under `tests/api/`. Within a spec, tests are sectioned with comment banners: `HAPPY PATH`, `EDGE CASES`, `NEGATIVE / ERROR TESTS`, and `BUG TESTS`. Known bugs are kept as `test.skip("BUG-N: ...")` entries documenting expected vs actual until fixed, do not delete them.
-
-### Test data hygiene
-
-Tests that create rows must clean up. Pattern: `const id = await createClient(...)` at the start, `await deleteClient(page, id)` at the end. Unique names use `` `Name ${Date.now()}` `` to avoid cross-run collisions while `fullyParallel: true` is enabled.
-
-### Reporters and artifacts
-
-`screenshot: "on"`, `video: "on"`, `trace: "on"` for all runs. HTML report does not auto-open (`open: "never"`). Test timeout is 20s.
-
-## Conventions
-
-- Conventional commits (`feat:`, `fix:`, `docs:`).
-- American English, prefer commas over em dashes.
-- When adding a new feature area, mirror the structure: page objects in `lib/pages/`, factories in `lib/datafactory/`, specs in `tests/<feature>/`.
+## Commands & Scripts
+- Install: `npm install && npx playwright install`
+- Run full suite: `npm run test:e2e`
+- Headed: `npm run test:e2e:headed`  ·  UI mode: `npm run test:e2e:ui`  ·  Debug: `npm run test:e2e:debug`
+- Single spec: `npx playwright test tests/clients/clients.spec.ts`
+- Single test by title: `npx playwright test -g "create client with valid name"`
+- Run just the API tests: `npx playwright test tests/api/`
+- Codegen against the configured base URL: `npx playwright codegen $BASE_URL`
+- Open trace: `npx playwright show-trace test-results/<path>/trace.zip`
+- Report: `npm run test:e2e:report`
+- Point at a non-default env file: `ENV_PATH=./.playwright.staging.env npx playwright test`
