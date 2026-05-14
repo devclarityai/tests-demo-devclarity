@@ -1,0 +1,21 @@
+{
+  "name": "tests-demo-devclarity",
+  "version": "1.0.0",
+  "description": "Playwright Tests against Demo DevClarity",
+  "main": "index.js",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^24.12.4",
+    "typescript": "^5.9.3"
+  }
+}

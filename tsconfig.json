@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "esModuleInterop": true,
+    "target": "esnext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "useDefineForClassFields": false,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+        "forceConsistentCasingInFileNames": true,
+
+    "noEmit": true,
+    "paths": {
+      "@datafactory/*": ["./lib/datafactory/*"],
+      "@helpers/*": ["./lib/helpers/*"],
+      "@fixtures/*": ["./lib/fixtures/*"],
+      "@pages/*": ["./lib/pages/*"]
+    }
+  },
+  "include": ["tests/**/*.ts", "lib/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules"] 
+}

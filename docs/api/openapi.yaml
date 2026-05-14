@@ -1,0 +1,256 @@
+openapi: 3.0.3
+info:
+  title: Project Management Dashboard API
+  version: 1.0.0
+  description: |
+    REST API for the Project Management Dashboard.
+
+    ## Authentication
+    All endpoints require an active session. Sign in via `POST /session` (email + password)
+    to establish a session cookie. Pass that cookie on subsequent requests.
+    No CSRF token is required for API endpoints.
+
+    ### Sign In
+    ```
+    POST /session
+    Content-Type: application/json
+
+    { "email_address": "user@example.com", "password": "secret" }
+    ```
+    The response sets a `session_id` signed cookie that must be included in all API requests.
+
+servers:
+  - url: http://localhost:3001
+    description: Local development
+
+tags:
+  - name: Resources
+    description: People and contractors that can be assigned to work blocks
+
+paths:
+  /api/v1/resources:
+    get:
+      tags: [Resources]
+      summary: List all resources
+      description: Returns all resources sorted alphabetically by name.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resources:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Resource"
+              example:
+                resources:
+                  - id: 1
+                    name: Alice Smith
+                    active: true
+                    billable_hours_limit: 40.0
+                    start_date: "2024-01-15"
+                    created_at: "2024-01-15T10:00:00.000Z"
+                    updated_at: "2024-01-15T10:00:00.000Z"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Resources]
+      summary: Create a resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resource]
+              properties:
+                resource:
+                  $ref: "#/components/schemas/ResourceInput"
+            example:
+              resource:
+                name: Alice Smith
+                active: true
+                billable_hours_limit: 40
+                start_date: "2024-01-15"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resource"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /api/v1/resources/{id}:
+    get:
+      tags: [Resources]
+      summary: Get a resource by ID
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resource"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    patch:
+      tags: [Resources]
+      summary: Update a resource
+      parameters:
+        - $ref: "#/components/parameters/ResourceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resource]
+              properties:
+                resource:
+                  $ref: "#/components/schemas/ResourceInput"
+            example:
+              resource:
+                active: false
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resource"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+components:
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The resource ID
+
+  schemas:
+    Resource:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        active:
+          type: boolean
+        billable_hours_limit:
+          type: number
+          format: float
+          minimum: 0
+          exclusiveMinimum: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ResourceInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Alice Smith
+        active:
+          type: boolean
+          example: true
+        billable_hours_limit:
+          type: number
+          format: float
+          minimum: 0
+          exclusiveMinimum: true
+          example: 40
+        start_date:
+          type: string
+          format: date
+          nullable: true
+          example: "2024-01-15"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+    ValidationErrors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+
+  responses:
+    Unauthorized:
+      description: Not authenticated - no active session
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Unauthorized
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Resource not found
+
+    BadRequest:
+      description: Missing required parameter wrapper
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "param is missing or the value is empty: resource"
+
+    UnprocessableEntity:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrors"
+          example:
+            errors:
+              - Name can't be blank
+              - Billable hours limit must be greater than 0
