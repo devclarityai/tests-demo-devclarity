@@ -32,7 +32,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - All page objects expose locators as readonly fields built off `this.page` - mirror that pattern when adding new pages
 - Rely on web-first assertions (`toBeVisible`, `toHaveURL`, `toHaveValue`). No `waitForTimeout` except the deliberate 1s warm-up in `clickAndGetAPIData`
 - Rails delete buttons trigger a native confirm dialog - register `page.once("dialog", d => d.accept())` immediately before the click
-- For Rails form validation tests, call `formPage.disableHtml5Validation()` so the server-side error path is exercised
 - Single worker, zero retries (see `playwright.config.ts`). Tests must be independent and clean up after themselves
 
 ## Anti-Patterns

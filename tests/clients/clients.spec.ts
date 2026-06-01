@@ -135,7 +135,6 @@ test("whitespace-only name is rejected with validation error", async ({
   const formPage = new ClientFormPage(page);
 
   await formPage.gotoNew();
-  await formPage.disableHtml5Validation();
   await formPage.nameField.fill("   ");
   await formPage.createButton.click();
 
@@ -227,7 +226,6 @@ test("edit client to blank name is rejected with validation error", async ({
 
   await formPage.gotoEdit(id);
   await formPage.nameField.fill("");
-  await formPage.disableHtml5Validation();
   await formPage.updateButton.click();
 
   await expect(formPage.errorSummary).toBeVisible();
