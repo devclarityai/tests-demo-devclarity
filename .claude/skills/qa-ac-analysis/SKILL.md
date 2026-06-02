@@ -14,8 +14,8 @@ argument-hint: "[ticket file or pasted acceptance criteria]"
 Input: a ticket + acceptance criteria (a markdown file or pasted text).
 Output: a list of gaps/ambiguities, then a risk ranking of what to test first.
 
-This is **not** the same as `/qa-gap-analysis` (which audits an existing *test suite*).
-This skill interrogates the *requirements*.
+This is **not** the same as `/qa-gap-analysis` (which audits an existing _test suite_).
+This skill interrogates the _requirements_.
 
 ## Live vs Proposed - know which mode you are in
 
@@ -27,6 +27,25 @@ This skill interrogates the *requirements*.
 State the mode before you start.
 
 ## Workflow
+
+## Pre-flight checks
+
+Run these before starting any work:
+
+```bash
+# 1. Verify playwright-cli is installed
+playwright-cli --version
+
+# 2. Verify Playwright version is 1.59 or higher
+npx playwright --version
+
+# 3. Ensure playwright-cli skills are installed
+playwright-cli install --skills
+```
+
+If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
+**Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in any HTML report generated from this analysis.
 
 ```
 AC Analysis Progress:
@@ -45,29 +64,29 @@ Note the Feature status (Live / Proposed).
 ### Step 2: Interrogate the acceptance criteria
 
 For each criterion and the gaps between them, ask:
+
 - **Ambiguity** - words that could mean two things ("at or above" -> `>=` or `>`?).
 - **Unstated rules** - boundaries, limits, formats, required fields the AC assumes.
 - **Missing states / paths** - error cases, empty states, permissions, concurrency.
-- **Side effects** - what *else* in the system this change touches (existing data,
+- **Side effects** - what _else_ in the system this change touches (existing data,
   other features that share it).
 - **Untestable criteria** - anything with no observable oracle.
 
-Output each as: *the gap* -> *the question it raises* -> *why it matters / who is hurt*.
+Output each as: _the gap_ -> _the question it raises_ -> _why it matters / who is hurt_.
 
 ### Step 3: Verify against the app (Live features only)
 
-Where you can, check the claim against the running app (Playwright MCP or the
-`/playwright-cli` skill). For each: product bug / wrong expectation / spec gap? Drop
-"gaps" that are actually already handled.
+Where you can, check the claim against the running app (using the `playwright-cli` skill). For each: product bug / wrong expectation / spec gap? Drop "gaps" that are actually already handled.
 
 ### Step 4: Rank what to test by risk
 
 Use a simple **severity x priority** model:
+
 - **Severity** - how badly the customer is affected if it breaks.
 - **Priority** - how much they care / will tolerate it.
 
 Pull in personas if available (see `/qa-context-personas`): "who is hurt if this
-breaks?" Risk is about people, not features. Challenge the *reporter's* stated priority
+breaks?" Risk is about people, not features. Challenge the _reporter's_ stated priority
 when severity says otherwise.
 
     | Gap / area | Severity | Priority | Test first? | Who is hurt |

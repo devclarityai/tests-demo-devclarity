@@ -8,10 +8,29 @@ argument-hint: "[describe the bug, or point at observed behavior / a Playwright 
 
 > Core principle: **AI drafts from evidence. Observed behavior beats a guessed repro.** Ground every field in what actually happened, not what probably happens.
 
-Input: behavior observed in the running app (ideally via Playwright MCP or the `/playwright-cli` skill, or a recorded walkthrough / screenshots).
+Input: behavior observed in the running app (using the `playwright-cli` skill, or a recorded walkthrough / screenshots).
 Output: a structured bug report using `template.md` that another tester could file and reproduce cold.
 
 ## Workflow
+
+## Pre-flight checks
+
+Run these before starting any work:
+
+```bash
+# 1. Verify playwright-cli is installed
+playwright-cli --version
+
+# 2. Verify Playwright version is 1.59 or higher
+npx playwright --version
+
+# 3. Ensure playwright-cli skills are installed
+playwright-cli install --skills
+```
+
+If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
+**Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in the bug report and any HTML report generated from it.
 
 ```
 Bug Report Progress:

@@ -9,9 +9,28 @@ argument-hint: "[file or pasted list of existing test cases]"
 > Core principle: existing cases inherit the blind spots of whoever wrote them. AI is good at asking "what else?" - you judge which gaps matter.
 
 Input: a set of existing test cases (a file, a pasted list, or a test management export).
-Output: the cases that are *missing*, organized so a tester can decide what to add.
+Output: the cases that are _missing_, organized so a tester can decide what to add.
 
 ## Workflow
+
+## Pre-flight checks
+
+Run these before starting any work:
+
+```bash
+# 1. Verify playwright-cli is installed
+playwright-cli --version
+
+# 2. Verify Playwright version is 1.59 or higher
+npx playwright --version
+
+# 3. Ensure playwright-cli skills are installed
+playwright-cli install --skills
+```
+
+If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
+**Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in any HTML report generated from this analysis.
 
 ```
 Gap Analysis Progress:
@@ -23,23 +42,23 @@ Gap Analysis Progress:
 
 ### Step 1: Read the existing cases
 
-Read every existing case. Summarize what they cover in one or two lines so the user can confirm you read them correctly. If you can observe the running feature (Playwright MCP or `/playwright-cli`) or have a field schema, use it - gaps are easier to see against the real thing.
+Read every existing case. Summarize what they cover in one or two lines so the user can confirm you read them correctly. If you can observe the running feature (using `playwright-cli show`) or have a field schema, use it - gaps are easier to see against the real thing.
 
 ### Step 2: Map coverage onto a grid
 
 Build a quick coverage map. Mark each cell covered / partial / missing:
 
-| Dimension | Covered? |
-|---|---|
-| Happy path | |
-| Each field's valid range | |
-| Each field's boundaries (on / just inside / just outside) | |
-| Each invalid input per field | |
-| Each state / status the feature can be in | |
-| Negative + error paths | |
-| Permissions / who can do this | |
-| Cross-feature side effects | |
-| Unstated business rules (rules the app enforces but the cases ignore) | |
+| Dimension                                                             | Covered? |
+| --------------------------------------------------------------------- | -------- |
+| Happy path                                                            |          |
+| Each field's valid range                                              |          |
+| Each field's boundaries (on / just inside / just outside)             |          |
+| Each invalid input per field                                          |          |
+| Each state / status the feature can be in                             |          |
+| Negative + error paths                                                |          |
+| Permissions / who can do this                                         |          |
+| Cross-feature side effects                                            |          |
+| Unstated business rules (rules the app enforces but the cases ignore) |          |
 
 ### Step 3: Name the gaps
 
@@ -55,6 +74,7 @@ Pay special attention to **unstated rules**: a restriction the app enforces (a f
 ### Step 4: Prioritize and self-critique
 
 **-> STOP.** Rank the gaps by risk (severity x priority). Then list:
+
 - Gaps you are **confident** are real.
 - Gaps that **depend on an assumption** you could not verify.
 - Any "gap" that might already be covered indirectly.
