@@ -27,10 +27,7 @@ Run these before starting any work:
 # 1. Verify playwright-cli is installed
 playwright-cli --version
 
-# 2. Verify Playwright version is 1.59 or higher
-npx playwright --version
-
-# 3. Ensure playwright-cli skills are installed
+# 2. Ensure playwright-cli skills are installed
 playwright-cli install --skills
 ```
 

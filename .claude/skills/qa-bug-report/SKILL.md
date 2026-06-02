@@ -21,10 +21,7 @@ Run these before starting any work:
 # 1. Verify playwright-cli is installed
 playwright-cli --version
 
-# 2. Verify Playwright version is 1.59 or higher
-npx playwright --version
-
-# 3. Ensure playwright-cli skills are installed
+# 2. Ensure playwright-cli skills are installed
 playwright-cli install --skills
 ```
 
@@ -43,6 +40,7 @@ Bug Report Progress:
 ### Step 1: Observe and capture
 
 Reproduce the bug against the running app and capture **real** evidence:
+
 - The exact steps taken (URLs, fields, values entered).
 - The actual result - real error text, real state, real selectors/values, a screenshot or trace if available.
 
@@ -53,7 +51,7 @@ Do not paraphrase from memory. If you did not observe a step, do not write it as
 - **Expected** - cite the source of the expectation (a ticket, an AC, a stated rule, or app behavior elsewhere). The oracle.
 - **Actual** - what the app did, in concrete terms.
 
-If the bug is that the app *allows* something it should block, say what rule is being violated and where that rule comes from.
+If the bug is that the app _allows_ something it should block, say what rule is being violated and where that rule comes from.
 
 ### Step 3: Draft from the template
 
@@ -62,6 +60,7 @@ Fill `template.md`: title, environment, preconditions, steps to reproduce, expec
 ### Step 4: Judge it
 
 **-> STOP.** Read the report back and ask:
+
 - Could another tester reproduce this with **only** what is written here?
 - What did I **assume** that is not in the evidence? Mark or remove it.
 - Is the severity/priority justified by impact, or guessed?
