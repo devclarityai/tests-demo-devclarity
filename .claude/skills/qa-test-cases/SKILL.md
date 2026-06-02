@@ -13,9 +13,9 @@ This skill produces test cases OR scenarios from one input "road." It does not a
 ## Inputs this skill accepts (the five roads)
 
 1. **Feature ticket + acceptance criteria** - a markdown ticket or pasted AC. The documented happy path.
-2. **Existing test cases** - generate *additional* cases (for gap analysis, prefer the `/qa-gap-analysis` skill).
+2. **Existing test cases** - generate _additional_ cases (for gap analysis, prefer the `/qa-gap-analysis` skill).
 3. **Screenshot of the app** - a pasted image. Generate from what is actually on screen.
-4. **Observed app behavior** - drive the running app (Playwright MCP or the `/playwright-cli` skill) and generate from real states and validation messages.
+4. **Observed app behavior** - drive the running app (Playwright MCP or the `/playwright-cli` skill) and generate from real states and validation messages. If this path is chosen, to give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing.
 5. **Recorded walkthrough** - a Chrome Recorder JSON replay or step list. Turn manual steps into structured cases.
 
 State which road you are running so the output can be compared against the others.
@@ -65,6 +65,7 @@ Every case needs an **oracle** - the explicit expected result. A case with a vag
 ### Step 4: Flag assumptions and self-critique
 
 **-> STOP.** Before handing back, list:
+
 - **Assumptions** - any rule, field, or value you inferred that is not in the input.
 - **Possible hallucinations** - fields/states/messages you are not certain exist.
 - **What this road probably missed** - what a different input would likely catch.

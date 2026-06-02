@@ -29,6 +29,8 @@ If `playwright-cli` is not found, install it first: `npm install -g @playwright/
 
 **Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in the bug report and any HTML report generated from it.
 
+To give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing.
+
 ```
 Bug Report Progress:
 - [ ] Step 1: Observe and capture the real behavior

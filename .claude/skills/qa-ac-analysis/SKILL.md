@@ -44,6 +44,8 @@ If `playwright-cli` is not found, install it first: `npm install -g @playwright/
 
 **Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in any HTML report generated from this analysis.
 
+To give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing.
+
 ```
 AC Analysis Progress:
 - [ ] Step 1: Read the ticket and restate what it asks for
