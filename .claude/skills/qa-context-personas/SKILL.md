@@ -8,9 +8,10 @@ argument-hint: "[app area to build context for]"
 
 > Core principle: **Context compounds. Garbage context, garbage tests.** AI with no
 > context guesses; AI with the right context tests like someone who knows the product.
-> The lift comes from *relevant* context, not *more* context.
+> The lift comes from _relevant_ context, not _more_ context.
 
 This skill builds two things into a reference file the other QA skills read:
+
 1. **Area context** - what this part of the app does, what it is not, key terms, rules,
    conventions.
 2. **Personas** - who uses it (and one anti-persona), reused later to rank risk by "who
@@ -18,33 +19,46 @@ This skill builds two things into a reference file the other QA skills read:
 
 ## Workflow
 
+## Pre-flight checks
+
+Run these before starting any work:
+
+```bash
+# 1. Verify playwright-cli is installed
+playwright-cli --version
+
+# 2. Verify Playwright version is 1.59 or higher
+npx playwright --version
+
+# 3. Ensure playwright-cli skills are installed
+playwright-cli install --skills
+```
+
+If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
 ```
 Context Progress:
-- [ ] Step 1: Show the naive baseline (optional, for the teaching moment)
-- [ ] Step 2: Draft tight area context
-- [ ] Step 3: Generate personas (1-2 + one anti-persona)
-- [ ] Step 4: Write it to the reference file
-- [ ] Step 5: Re-run and compare
+- [ ] Step 1: Draft tight area context
+- [ ] Step 2: Generate personas (1-2 + one anti-persona)
+- [ ] Step 3: Write it to the reference file
+- [ ] Step 4: Re-run and compare
 ```
 
-### Step 1: Naive baseline (optional but powerful)
-
-Before adding context, run the target task (e.g. `/qa-test-cases`) against a thin or
-empty reference file. Keep the output. It will be generic and maybe hallucinated. This
-is the "before" - most teams stop here and decide AI is useless.
-
-### Step 2: Draft area context
+### Step 1: Draft area context
 
 Write a **tight** description of the area. Progressive disclosure, not a data dump:
-- What it does and what it is explicitly *not* for.
+
+- What it does and what it is explicitly _not_ for.
 - Key domain terms and their meaning in this product.
 - Known rules/constraints (the non-obvious ones earn their place).
 - Testing conventions for this area.
 
-If you can, observe the running app (Playwright MCP or `/playwright-cli`) or read the
+If you can, observe the running app (using playwright-cli) or read the
 relevant code to ground this - do not invent product facts.
 
-### Step 3: Generate personas
+To give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing.
+
+### Step 2: Generate personas
 
 Draft 1-2 primary personas and **one anti-persona** (someone who misuses or stresses
 the feature). Each: who they are, what they need, what breaks their day. Review them as
@@ -55,17 +69,17 @@ a team before keeping - reject generic filler.
     - **Cares most about:** ...
     - **Hurt if this breaks:** ...   <- this line feeds risk ranking later
 
-### Step 4: Write to the reference file
+### Step 3: Write to the reference file
 
 Fold the area context and personas into the skill's reference file (e.g. a
 `reference/*.md` the QA skills read, or a layered CLAUDE.md / rules file). Keep it
 layered and lean. Flag what belongs in a rules file vs a skill reference.
 
-### Step 5: Re-run and compare
+### Step 4: Re-run and compare
 
 **-> STOP.** Re-run the same task against the now-populated reference file. Put the
 naive output and the grounded output side by side. Name specific improvements - and if
-it did *not* improve, that is the lesson too: relevant beats more. Trim and re-run once.
+it did _not_ improve, that is the lesson too: relevant beats more. Trim and re-run once.
 
 ## Critical rules
 
