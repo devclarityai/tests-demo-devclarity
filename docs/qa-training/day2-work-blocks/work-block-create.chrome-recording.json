@@ -1,0 +1,80 @@
+{
+  "title": "Create a work block (happy path)",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1280,
+      "height": 800,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "https://demo-devclarity-a784e3815d0b.herokuapp.com/work_blocks/new",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://demo-devclarity-a784e3815d0b.herokuapp.com/work_blocks/new",
+          "title": "New Work Block"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [["#work_block_title"], ["aria/Title"]],
+      "offsetX": 12,
+      "offsetY": 14
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [["#work_block_title"], ["aria/Title"]],
+      "value": "Discovery sync"
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [["#work_block_project_id"], ["aria/Project"]],
+      "value": "1"
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [["#work_block_work_block_type_id"], ["aria/Work Block Type"]],
+      "value": "2"
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [["#work_block_date"], ["aria/Date"]],
+      "value": "2026-06-11"
+    },
+    {
+      "type": "change",
+      "target": "main",
+      "selectors": [["#work_block_work_block_status_id"], ["aria/Status"]],
+      "value": "1"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        ["input[type=\"submit\"]"],
+        ["aria/Create Work block"],
+        ["xpath///input[@type='submit']"]
+      ],
+      "offsetX": 40,
+      "offsetY": 12,
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://demo-devclarity-a784e3815d0b.herokuapp.com/projects/1",
+          "title": "Project"
+        }
+      ]
+    }
+  ]
+}
