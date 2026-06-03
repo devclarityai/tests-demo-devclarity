@@ -29,9 +29,14 @@ playwright-cli --version
 
 # 2. Ensure playwright-cli skills are installed
 playwright-cli install --skills
+
+# 3. Session name — use -s=<output> for all playwright-cli calls this run
+echo "personas-$RANDOM"
 ```
 
 If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
+Use the output from step 3 as your `-s=` value for every `playwright-cli` call this run.
 
 ```
 Context Progress:

@@ -1,9 +1,5 @@
 # Existing Test Cases - Work Block form (DCD-318)
 
-> Road 2 input for the five-roads workshop. This is an **inherited** suite a previous
-> tester wrote from the ticket. It is intentionally incomplete - feed it to the
-> `/qa-gap-analysis` skill and find what is missing.
-
 | ID | Title | Steps | Expected |
 |---|---|---|---|
 | WB-01 | Create a work block with all fields | Open New Work Block, enter Title "Kickoff call", pick a Project, pick Type "Project Kickoff", pick a weekday Date, pick Status "Held", Save | Work block is created; redirected to the project with a success message |

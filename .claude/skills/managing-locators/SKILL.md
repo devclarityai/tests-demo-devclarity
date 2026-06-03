@@ -24,9 +24,14 @@ npx playwright --version
 
 # 3. Ensure playwright-cli skills are installed
 playwright-cli install --skills
+
+# 4. Session name — use -s=<output> for all playwright-cli calls this run
+echo "locators-$RANDOM"
 ```
 
 If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+
+Use the output from step 4 as your `-s=` value for every `playwright-cli` call this run.
 
 ## Locator priority (both modes)
 
