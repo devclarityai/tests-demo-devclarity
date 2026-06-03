@@ -33,16 +33,13 @@ node -e "process.stdout.write(require('fs').readFileSync(process.argv[1]).toStri
 
 Then: `<img src="data:image/png;base64,...." alt="...">` wrapped in a `<figure>` with a short `<figcaption>`.
 
-### Step 3: Save to the Desktop
+### Step 3: Save to the html directory
 
-Detect the platform with `uname -s` (`Darwin` = Mac, `MINGW*`/`MSYS*` = Windows Git Bash).
+Save to the `html/` directory at the repo root.
 
 ```bash
-# Mac
-mkdir -p ~/Desktop/qa-reports
-
-# Windows (Git Bash)
-mkdir -p "$USERPROFILE/Desktop/qa-reports"
+# run if needed to create the directory
+mkdir -p html
 ```
 
 Filename: `<kebab-case-title>-<YYYY-MM-DD-HHmm>.html` (timestamp avoids overwriting earlier reports). Write the file there.

@@ -15,7 +15,7 @@ This skill produces test cases OR scenarios from one input "road." It does not a
 1. **Feature ticket + acceptance criteria** - a markdown ticket or pasted AC. The documented happy path.
 2. **Existing test cases** - generate _additional_ cases (for gap analysis, prefer the `/qa-gap-analysis` skill).
 3. **Screenshot of the app** - a pasted image. Generate from what is actually on screen.
-4. **Observed app behavior** - drive the running app (Playwright MCP or the `/playwright-cli` skill) and generate from real states and validation messages. If this path is chosen, to give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing.
+4. **Observed app behavior** - drive the running app using the `/playwright-cli` skill and generate from real states and validation messages. **Do not use MCP playwright tools (`mcp__playwright__*`) as a substitute - always use `playwright-cli` bash commands.** If this path is chosen, to give visibility into the process go ahead and run a background command `playwright-cli show` so we can see what the agent is doing. Then invoke the `/playwright-cli` skill to load its context before navigating. **Evidence capture:** you may save screenshots and walkthrough captures into the `.playwright-cli/` directory (e.g. `playwright-cli screenshot --filename=.playwright-cli/<name>.png`). Embed these in any HTML report generated from it.
 5. **Recorded walkthrough** - a Chrome Recorder JSON replay or step list. Turn manual steps into structured cases.
 
 State which road you are running so the output can be compared against the others.
@@ -86,3 +86,4 @@ This list is the point. Present everything and wait for the tester to judge it.
 - Confident cases with no oracle or with an invented expected value.
 - Skipping the assumptions/hallucination list.
 - Treating one road's output as complete coverage.
+- Using MCP playwright tools instead of `playwright-cli` for road 4.
