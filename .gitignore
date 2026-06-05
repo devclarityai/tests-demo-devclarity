@@ -75,3 +75,4 @@ devenv.local.yaml
 *.bat
 .playwright.env
 plans
+html

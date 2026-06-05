@@ -1,0 +1,480 @@
+{
+  "title": "Existing Project -> New Work Block Creation",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1415,
+      "height": 929,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "https://demo-devclarity-a784e3815d0b.herokuapp.com/clients/7",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "https://demo-devclarity-a784e3815d0b.herokuapp.com/clients/7",
+          "title": "Dashboard"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "main > div > div > div > div:nth-of-type(1) > div"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[1]/div"
+        ],
+        [
+          "pierce/main > div > div > div > div:nth-of-type(1) > div"
+        ]
+      ],
+      "offsetY": 46,
+      "offsetX": 656
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "div:nth-of-type(8) div.text-blue-600"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[4]/div/div[8]/div[2]/div[1]/div[2]/div/div[3]"
+        ],
+        [
+          "pierce/div:nth-of-type(8) div.text-blue-600"
+        ]
+      ],
+      "offsetY": 1.5,
+      "offsetX": 75
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Back to Clients"
+        ],
+        [
+          "a.bg-gray-200"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[1]/div/div[2]/a[2]"
+        ],
+        [
+          "pierce/a.bg-gray-200"
+        ],
+        [
+          "text/Back to Clients"
+        ]
+      ],
+      "offsetY": 28,
+      "offsetX": 68.7890625
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "tr:nth-of-type(3) a.border-green-300"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[2]/table/tbody/tr[3]/td[4]/div/a[1]"
+        ],
+        [
+          "pierce/tr:nth-of-type(3) a.border-green-300"
+        ]
+      ],
+      "offsetY": 14,
+      "offsetX": 24.890625
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "tr:nth-of-type(1) a.mr-3"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[3]/div[2]/table/tbody/tr[1]/td[4]/a[1]"
+        ],
+        [
+          "pierce/tr:nth-of-type(1) a.mr-3"
+        ]
+      ],
+      "offsetY": 12.5,
+      "offsetX": 18.171875
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Add Work Block"
+        ],
+        [
+          "div:nth-of-type(3) a"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[3]/div[1]/a"
+        ],
+        [
+          "pierce/div:nth-of-type(3) a"
+        ],
+        [
+          "text/Add Work Block"
+        ]
+      ],
+      "offsetY": 11.5,
+      "offsetX": 68.09375
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "offsetY": 17,
+      "offsetX": 115
+    },
+    {
+      "type": "change",
+      "value": "N",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "n",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "New W",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "w",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "New Work B",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "b",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "New Work Block - Te",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "keyUp",
+      "key": "t",
+      "target": "main"
+    },
+    {
+      "type": "change",
+      "value": "New Work Block - Test",
+      "selectors": [
+        [
+          "aria/Title"
+        ],
+        [
+          "#work_block_title"
+        ],
+        [
+          "xpath///*[@id=\"work_block_title\"]"
+        ],
+        [
+          "pierce/#work_block_title"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Work Block Type"
+        ],
+        [
+          "#work_block_work_block_type_id"
+        ],
+        [
+          "xpath///*[@id=\"work_block_work_block_type_id\"]"
+        ],
+        [
+          "pierce/#work_block_work_block_type_id"
+        ]
+      ],
+      "offsetY": 25,
+      "offsetX": 266
+    },
+    {
+      "type": "change",
+      "value": "4",
+      "selectors": [
+        [
+          "aria/Work Block Type"
+        ],
+        [
+          "#work_block_work_block_type_id"
+        ],
+        [
+          "xpath///*[@id=\"work_block_work_block_type_id\"]"
+        ],
+        [
+          "pierce/#work_block_work_block_type_id"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Date"
+        ],
+        [
+          "#work_block_date"
+        ],
+        [
+          "xpath///*[@id=\"work_block_date\"]"
+        ],
+        [
+          "pierce/#work_block_date"
+        ]
+      ],
+      "offsetY": 12,
+      "offsetX": 635
+    },
+    {
+      "type": "change",
+      "value": "2026-07-10",
+      "selectors": [
+        [
+          "aria/Date"
+        ],
+        [
+          "#work_block_date"
+        ],
+        [
+          "xpath///*[@id=\"work_block_date\"]"
+        ],
+        [
+          "pierce/#work_block_date"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Status"
+        ],
+        [
+          "#work_block_work_block_status_id"
+        ],
+        [
+          "xpath///*[@id=\"work_block_work_block_status_id\"]"
+        ],
+        [
+          "pierce/#work_block_work_block_status_id"
+        ]
+      ],
+      "offsetY": 21,
+      "offsetX": 74
+    },
+    {
+      "type": "change",
+      "value": "2",
+      "selectors": [
+        [
+          "aria/Status"
+        ],
+        [
+          "#work_block_work_block_status_id"
+        ],
+        [
+          "xpath///*[@id=\"work_block_work_block_status_id\"]"
+        ],
+        [
+          "pierce/#work_block_work_block_status_id"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "div:nth-of-type(6) > div > div:nth-of-type(1) select"
+        ],
+        [
+          "xpath///*[@id=\"role-7-resources\"]/div/select"
+        ],
+        [
+          "pierce/div:nth-of-type(6) > div > div:nth-of-type(1) select"
+        ]
+      ],
+      "offsetY": 29,
+      "offsetX": 111
+    },
+    {
+      "type": "change",
+      "value": "2",
+      "selectors": [
+        [
+          "div:nth-of-type(6) > div > div:nth-of-type(1) select"
+        ],
+        [
+          "xpath///*[@id=\"role-7-resources\"]/div/select"
+        ],
+        [
+          "pierce/div:nth-of-type(6) > div > div:nth-of-type(1) select"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "div:nth-of-type(6) > div > div:nth-of-type(2) select"
+        ],
+        [
+          "xpath///*[@id=\"role-8-resources\"]/div/select"
+        ],
+        [
+          "pierce/div:nth-of-type(6) > div > div:nth-of-type(2) select"
+        ]
+      ],
+      "offsetY": 28.5,
+      "offsetX": 216
+    },
+    {
+      "type": "change",
+      "value": "3",
+      "selectors": [
+        [
+          "div:nth-of-type(6) > div > div:nth-of-type(2) select"
+        ],
+        [
+          "xpath///*[@id=\"role-8-resources\"]/div/select"
+        ],
+        [
+          "pierce/div:nth-of-type(6) > div > div:nth-of-type(2) select"
+        ]
+      ],
+      "target": "main"
+    },
+    {
+      "type": "click",
+      "target": "main",
+      "selectors": [
+        [
+          "aria/Create Work block"
+        ],
+        [
+          "div.mt-6 input"
+        ],
+        [
+          "xpath//html/body/div/div[2]/main/div/div/div/div[2]/div/form/div[2]/div/input"
+        ],
+        [
+          "pierce/div.mt-6 input"
+        ],
+        [
+          "text/Create Work block"
+        ]
+      ],
+      "offsetY": 30,
+      "offsetX": 92.109375
+    }
+  ]
+}
