@@ -8,6 +8,9 @@ export class ProjectFormPage {
     name: "Type to search clients...",
   });
   readonly statusSelect = this.page.getByRole("combobox", { name: "Status" });
+  readonly firstAnchorDateInput = this.page.getByRole("textbox", {
+    name: "First Anchor Date",
+  });
   readonly createButton = this.page.getByRole("button", {
     name: "Create Project",
   });

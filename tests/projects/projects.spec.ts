@@ -32,6 +32,7 @@ test("create project with client and status redirects to detail page", async ({
   await formPage.clientSearchInput.fill(clientName);
   await formPage.getClientOption(clientName).click();
   await formPage.statusSelect.selectOption("Execution");
+  await formPage.firstAnchorDateInput.fill("2026-06-14");
   await formPage.createButton.click();
 
   await expect(page).toHaveURL(/\/projects\/\d+/);
