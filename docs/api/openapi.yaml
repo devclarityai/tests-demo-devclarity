@@ -6,11 +6,34 @@ info:
     REST API for the Project Management Dashboard.
 
     ## Authentication
-    All endpoints require an active session. Sign in via `POST /session` (email + password)
-    to establish a session cookie. Pass that cookie on subsequent requests.
+    Endpoints accept any of three credentials:
+
+    1. **API key (bearer token)** — recommended for programmatic access. Long-lived
+       and scope-limited (`read`/`write`). Pass it in the `Authorization` header:
+       ```
+       Authorization: Bearer sk_xxxxxxxxxxxxxxxxxxxxxxxx
+       ```
+    2. **Login token (bearer token)** — short-lived (10 minutes), obtained from
+       `POST /api/v1/login` with email + password. Grants the **same access as the
+       user's browser session** (not scope-limited). Pass it as a bearer token,
+       exactly like an API key.
+    3. **Session cookie** — for same-origin browser clients. Sign in via
+       `POST /session` (email + password) to establish a `session_id` cookie and
+       pass it on subsequent requests.
+
     No CSRF token is required for API endpoints.
 
-    ### Sign In
+    ## API key scopes
+    Each API key has a scope:
+    - `read` — may make safe (`GET`) requests only.
+    - `write` — may make any request (write **includes** read).
+
+    A `read` key receives `403 Forbidden` on any mutating request. Session-cookie
+    (browser) clients are not scope-restricted. API keys are managed via the
+    `/api/v1/api-keys` endpoints; creating, updating, or revoking a key requires
+    a `write`-scoped key (or a session).
+
+    ### Sign In (cookie auth)
     ```
     POST /session
     Content-Type: application/json
@@ -23,11 +46,66 @@ servers:
   - url: http://localhost:3001
     description: Local development
 
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
 tags:
+  - name: Authentication
+    description: Exchange credentials for a short-lived login token.
   - name: Resources
     description: People and contractors that can be assigned to work blocks
+  - name: API Keys
+    description: Programmatic access tokens (bearer). The raw token is shown only once, at creation.
 
 paths:
+  /api/v1/login:
+    post:
+      tags: [Authentication]
+      summary: Exchange credentials for a login token
+      description: |
+        Authenticates email + password and returns a short-lived (10 minute)
+        bearer token with the same access as the user's browser session. The raw
+        token is returned only here.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+            example:
+              email_address: admin@example.com
+              password: adminpassword123
+      responses:
+        "201":
+          description: Authenticated. Returns the bearer token (shown once).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginToken"
+        "401":
+          description: Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: Invalid email or password
+
+  /api/v1/logout:
+    delete:
+      tags: [Authentication]
+      summary: Revoke the current login token
+      description: |
+        Revokes the login token used to make this request. No-op for cookie or
+        API-key callers.
+      responses:
+        "204":
+          description: Token revoked (no content)
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
   /api/v1/resources:
     get:
       tags: [Resources]
@@ -87,6 +165,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
 
@@ -137,10 +217,151 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+
+  /api/v1/api-keys:
+    get:
+      tags: [API Keys]
+      summary: List API keys
+      description: |
+        Returns the authenticated user's API keys (newest first). The raw token
+        is **never** returned here — only `token_prefix` to help identify a key.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_keys:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiKey"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [API Keys]
+      summary: Create an API key
+      description: |
+        Requires a `write`-scoped key (or a session). The response includes the
+        raw `token` — this is the only time it is ever returned. Store it now.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [api_key]
+              properties:
+                api_key:
+                  $ref: "#/components/schemas/ApiKeyInput"
+            example:
+              api_key:
+                name: CI pipeline
+                scope: read
+      responses:
+        "201":
+          description: Created. Includes the raw token (shown once).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyCreated"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  /api/v1/api-keys/{id}:
+    get:
+      tags: [API Keys]
+      summary: Get an API key by ID
+      parameters:
+        - $ref: "#/components/parameters/ApiKeyId"
+      responses:
+        "200":
+          description: Success (metadata only; never the raw token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKey"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/ApiKeyNotFound"
+
+    patch:
+      tags: [API Keys]
+      summary: Update an API key
+      description: |
+        Requires a `write`-scoped key (or a session). Updates `name`, `scope`,
+        and/or `expires_at`. The token itself is never reissued.
+      parameters:
+        - $ref: "#/components/parameters/ApiKeyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [api_key]
+              properties:
+                api_key:
+                  $ref: "#/components/schemas/ApiKeyInput"
+            example:
+              api_key:
+                name: CI pipeline (read-only)
+                scope: read
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKey"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiKeyNotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+    delete:
+      tags: [API Keys]
+      summary: Revoke an API key
+      description: |
+        Soft-revoke. Requires a `write`-scoped key (or a session). The record is
+        retained for audit (`revoked_at` is set) and the key stops authenticating
+        immediately. Returns the revoked key's metadata.
+      parameters:
+        - $ref: "#/components/parameters/ApiKeyId"
+      responses:
+        "200":
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKey"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/ApiKeyNotFound"
 
 components:
   parameters:
@@ -151,6 +372,14 @@ components:
       schema:
         type: integer
       description: The resource ID
+
+    ApiKeyId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: The API key ID
 
   schemas:
     Resource:
@@ -164,10 +393,8 @@ components:
         active:
           type: boolean
         billable_hours_limit:
-          type: number
-          format: float
-          minimum: 0
-          exclusiveMinimum: true
+          type: string
+          example: "40.0"
         start_date:
           type: string
           format: date
@@ -183,6 +410,7 @@ components:
 
     ResourceInput:
       type: object
+      required: [name, active, billable_hours_limit]
       properties:
         name:
           type: string
@@ -191,11 +419,8 @@ components:
           type: boolean
           example: true
         billable_hours_limit:
-          type: number
-          format: float
-          minimum: 0
-          exclusiveMinimum: true
-          example: 40
+          type: string
+          example: "40.0"
         start_date:
           type: string
           format: date
@@ -215,6 +440,110 @@ components:
           type: array
           items:
             type: string
+
+    LoginInput:
+      type: object
+      required: [email_address, password]
+      properties:
+        email_address:
+          type: string
+          example: admin@example.com
+        password:
+          type: string
+          format: password
+          example: adminpassword123
+
+    LoginToken:
+      type: object
+      properties:
+        token:
+          type: string
+          description: 'Short-lived bearer token. Returned only once. Use as `Authorization: Bearer <token>`.'
+          readOnly: true
+          example: 0rY5yFM0JsJK1LoLowjhI2GJOjWvhZ15AcwZGxte7-M
+        token_type:
+          type: string
+          example: Bearer
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          description: Expiry, 10 minutes after issuance.
+          readOnly: true
+
+    ApiKey:
+      type: object
+      description: API key metadata. The raw token is never included.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          example: CI pipeline
+        scope:
+          type: string
+          enum: [read, write]
+        token_prefix:
+          type: string
+          description: First 11 characters of the token, for identification only.
+          example: sk_ro_7Jq2N
+          readOnly: true
+        active:
+          type: boolean
+          description: False once expired or revoked.
+          readOnly: true
+        last_used_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ApiKeyCreated:
+      allOf:
+        - $ref: "#/components/schemas/ApiKey"
+        - type: object
+          properties:
+            token:
+              type: string
+              description: The raw API key. Returned only once, at creation. Store it securely.
+              example: sk_ro_7Jq2NbVx9dKmPf3RtZcL8aHsWy6gE4uT
+              readOnly: true
+
+    ApiKeyInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: CI pipeline
+        scope:
+          type: string
+          enum: [read, write]
+          default: read
+          description: "write includes read; read is GET-only."
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional expiry. Omit for a non-expiring key.
 
   responses:
     Unauthorized:
@@ -236,7 +565,7 @@ components:
             error: Resource not found
 
     BadRequest:
-      description: Missing required parameter wrapper
+      description: 'Resource wrapper is null or empty. Note - omitting the wrapper key entirely does not trigger this response because Rails auto-wraps bare JSON bodies under the model name. Send `{ "resource": null }` to trigger this response.'
       content:
         application/json:
           schema:
@@ -254,3 +583,32 @@ components:
             errors:
               - Name can't be blank
               - Billable hours limit must be greater than 0
+
+    Forbidden:
+      description: Authenticated, but the API key's scope is insufficient (a read key attempted a write).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Forbidden: write scope required"
+
+    ApiKeyNotFound:
+      description: API key not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: API key not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "API key passed as a bearer token: `Authorization: Bearer sk_...`"
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_id
+      description: Signed session cookie set by `POST /session`.
