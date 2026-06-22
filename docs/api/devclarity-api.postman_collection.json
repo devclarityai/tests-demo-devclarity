@@ -1,0 +1,339 @@
+{
+  "info": {
+    "name": "Project Management Dashboard API v1",
+    "_postman_id": "9f1c0b2a-4d3e-4a1b-8c5d-7e2f6a9b0c11",
+    "description": "REST API for the Project Management Dashboard (Demo DevClarity).\n\n## Authentication\nEndpoints accept any of three credentials, all interchangeable:\n\n1. **API key (bearer token)** — long-lived, scope-limited (`read`/`write`). `Authorization: Bearer sk_...`\n2. **Login token (bearer token)** — short-lived (10 min), full session access. Obtained from `POST /api/v1/login`.\n3. **Session cookie** — same-origin browser clients. Sign in via `POST /session`.\n\nNo CSRF token is required for API endpoints.\n\n## Using this collection\n- Set the `baseUrl` variable (default `http://localhost:3001`).\n- Run **Authentication > Login** (or **Create an API key**) — its test script auto-populates the `bearerToken` collection variable used by every other request.\n- Collection-level auth is **Bearer `{{bearerToken}}`**; individual requests inherit it.\n- `resourceId` and `apiKeyId` variables fill the `:id` path segments.\n\n## API key scopes\n- `read` — `GET` only.\n- `write` — any request (includes read). Creating/updating/revoking a key requires a `write` key (or a session).\n\nFull machine-readable spec: `openapi.yaml`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "bearerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "resourceId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "apiKeyId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "email_address",
+      "value": "admin@example.com",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "adminpassword123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Exchange credentials for a short-lived login token, or sign in for a session cookie.",
+      "item": [
+        {
+          "name": "Login (issue bearer token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var token = pm.response.json().token;",
+                  "    pm.collectionVariables.set(\"bearerToken\", token);",
+                  "    console.log(\"bearerToken set from login token\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email_address\": \"{{email_address}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "login"]
+            },
+            "description": "Authenticates email + password and returns a short-lived (10 minute) bearer token with the same access as the user's browser session. The raw token is returned only here.\n\nThe test script stores the token in the `bearerToken` collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout (revoke login token)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "logout"]
+            },
+            "description": "Revokes the login token used to make this request (returns 204). No-op for cookie or API-key callers."
+          },
+          "response": []
+        },
+        {
+          "name": "Sign in (session cookie)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email_address\": \"{{email_address}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": ["{{baseUrl}}"],
+              "path": ["session"]
+            },
+            "description": "Same-origin browser sign-in. Sets a signed `session_id` cookie; Postman's cookie jar will reuse it on subsequent same-host requests. Session clients are not scope-restricted."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "description": "People and contractors that can be assigned to work blocks.",
+      "item": [
+        {
+          "name": "List resources",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "resources"]
+            },
+            "description": "Returns all resources sorted alphabetically by name."
+          },
+          "response": []
+        },
+        {
+          "name": "Get resource by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/resources/{{resourceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "resources", "{{resourceId}}"]
+            },
+            "description": "Returns a single resource by ID. Returns 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Create resource",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": {\n    \"name\": \"Alice Smith\",\n    \"active\": true,\n    \"billable_hours_limit\": 40,\n    \"start_date\": \"2024-01-15\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "resources"]
+            },
+            "description": "Creates a new resource. Requires a `write`-scoped key (or a session).\n\nValidation:\n- `resource.name` (required)\n- `resource.active` (required, boolean)\n- `resource.billable_hours_limit` (required, > 0)\n- `resource.start_date` (optional, YYYY-MM-DD)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update resource",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resource\": {\n    \"active\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/resources/{{resourceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "resources", "{{resourceId}}"]
+            },
+            "description": "Updates an existing resource. Only include the fields you want to change. Requires a `write`-scoped key (or a session)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "API Keys",
+      "description": "Programmatic access tokens (bearer). The raw token is shown only once, at creation.",
+      "item": [
+        {
+          "name": "List API keys",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/api-keys",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "api-keys"]
+            },
+            "description": "Returns the authenticated user's API keys (newest first). The raw token is never returned here — only `token_prefix`."
+          },
+          "response": []
+        },
+        {
+          "name": "Get API key by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/api-keys/{{apiKeyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "api-keys", "{{apiKeyId}}"]
+            },
+            "description": "Returns a single key's metadata (never the raw token). Returns 404 if not found."
+          },
+          "response": []
+        },
+        {
+          "name": "Create API key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    var body = pm.response.json();",
+                  "    pm.collectionVariables.set(\"apiKeyId\", body.id);",
+                  "    if (body.token) {",
+                  "        pm.collectionVariables.set(\"bearerToken\", body.token);",
+                  "        console.log(\"bearerToken set from new API key (shown only once)\");",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": {\n    \"name\": \"CI pipeline\",\n    \"scope\": \"read\",\n    \"expires_at\": null\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/api-keys",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "api-keys"]
+            },
+            "description": "Creates an API key. Requires a `write`-scoped key (or a session). The response includes the raw `token` — the only time it is ever returned.\n\nThe test script captures the new key's `id` and `token` into collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Update API key",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": {\n    \"name\": \"CI pipeline (read-only)\",\n    \"scope\": \"read\",\n    \"expires_at\": \"2026-12-31T00:00:00.000Z\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/api-keys/{{apiKeyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "api-keys", "{{apiKeyId}}"]
+            },
+            "description": "Updates `name`, `scope`, and/or `expires_at`. The token itself is never reissued. Requires a `write`-scoped key (or a session)."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke API key",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/api-keys/{{apiKeyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "api-keys", "{{apiKeyId}}"]
+            },
+            "description": "Soft-revoke. Requires a `write`-scoped key (or a session). The record is retained for audit (`revoked_at` set) and the key stops authenticating immediately. Returns the revoked key's metadata."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

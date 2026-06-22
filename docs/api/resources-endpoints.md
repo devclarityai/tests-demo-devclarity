@@ -4,7 +4,22 @@ All endpoints live under `/api/v1/`. No CSRF token is required.
 
 ## Authentication
 
-Sign in first to get a session cookie:
+Three credentials are accepted:
+
+**1. API key (bearer token)** - recommended for scripts and integrations. Long-lived, scope-limited (`read`/`write`):
+
+```
+GET /api/v1/resources
+Authorization: Bearer sk_xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+**2. Login token (bearer token)** - short-lived (10 min), full access. Exchange email + password via `POST /api/v1/login` - see [`login.md`](login.md):
+
+```
+Authorization: Bearer <login token>
+```
+
+**3. Session cookie** - for same-origin browser clients. Sign in to get one:
 
 ```
 POST /session
@@ -13,7 +28,13 @@ Content-Type: application/json
 { "email_address": "user@example.com", "password": "secret" }
 ```
 
-Include the resulting `session_id` cookie on all subsequent requests. A missing or invalid session returns `401 Unauthorized`.
+Include the resulting `session_id` cookie on subsequent requests. A missing or invalid credential returns `401 Unauthorized`.
+
+### API key scopes
+
+Each key is `read` or `write`. A `read` key may make `GET` requests only; a `write` key may do anything (write includes read). A `read` key attempting a mutating request gets `403 Forbidden`. Session-cookie clients are not scope-restricted.
+
+Manage keys via the `/api/v1/api-keys` endpoints - see [`api-keys.md`](api-keys.md).
 
 ---
 
