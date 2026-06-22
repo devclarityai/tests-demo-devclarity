@@ -236,7 +236,7 @@ expect(response.url()).toContain("/session");  // correct for APIResponse
 ### Install
 
 ```bash
-npm install -g playwright-cli
+npm install -g @playwright/cli@latest
 playwright-cli install --skills
 ```
 

@@ -38,8 +38,8 @@ Then: `<img src="data:image/png;base64,...." alt="...">` wrapped in a `<figure>`
 Save to the `html/` directory at the repo root.
 
 ```bash
-# run if needed to create the directory
-mkdir -p html
+# run if needed to create the directory (cross-platform — works in any shell)
+node -e "require('fs').mkdirSync('html', { recursive: true })"
 ```
 
 Filename: `<kebab-case-title>-<YYYY-MM-DD-HHmm>.html` (timestamp avoids overwriting earlier reports). Write the file there.
