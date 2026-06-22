@@ -12,9 +12,27 @@ description: Guides the creation of Playwright E2E tests from planning through i
 Run these before starting any test work:
 
 ```bash
-# 1. Verify Playwright version is 1.59 or higher
+# 1. Verify playwright-cli is installed
+playwright-cli --version
+
+# 2. Verify Playwright version is 1.59 or higher
 npx playwright --version
+
+# 3. Ensure playwright-cli skills are installed
+playwright-cli install --skills
+
+# 4. Session name — use -s=<output> for all playwright-cli calls this run
+node -e "console.log('e2e-' + Date.now())"
 ```
+
+If `playwright-cli` is not found, install it by running these two commands separately (chaining with `&&` can fail on Windows):
+
+```bash
+npm install -g @playwright/cli@latest
+playwright-cli install --skills
+```
+
+Use the output from step 4 as your `-s=` value for every `playwright-cli` call this run.
 
 ---
 
@@ -84,10 +102,33 @@ skipped. Share a summary of what was seeded.**
 1. Read existing POM files to identify what can be reused or extended.
    Review current locator strategies.
 2. For each page/component in the plan, create or update a POM class.
-3. Use Playwright MCP to validate locators — navigate to the page,
-   take browser snapshots, and verify elements exist. If locators need
-   discovery, explore the feature: snapshot before and after key
-   interactions, test locator reliability across multiple attempts.
+3. Use playwright-cli to validate locators against the live app — open a
+   session, navigate to the page, and snapshot to confirm elements exist.
+   If locators need discovery, explore the feature: snapshot before AND
+   after each key interaction (dialogs, dropdowns, forms), then capture a
+   recommended locator for each element. Test reliability — verify each
+   locator selects exactly one element across 2-3 attempts.
+
+   ```bash
+   # Open a session (reuse the e2e-<n> name from pre-flight for every call)
+   playwright-cli -s=$SESSION open <url>
+   playwright-cli -s=$SESSION snapshot
+
+   # Interact, then snapshot the new state to capture revealed elements
+   playwright-cli -s=$SESSION click <element description>
+   playwright-cli -s=$SESSION snapshot
+   playwright-cli -s=$SESSION fill <element description> <value>
+   playwright-cli -s=$SESSION snapshot
+
+   # Generate a recommended Playwright locator for an element
+   playwright-cli -s=$SESSION generate-locator <ref> --raw
+
+   # Optionally open the dashboard to review the live page with the user
+   playwright-cli -s=$SESSION show
+
+   playwright-cli -s=$SESSION close
+   ```
+
 4. Document assumptions about page state or prerequisites.
 
 Locator priority: `getByRole` > `getByLabel` > `getByTestId` > CSS
@@ -103,7 +144,7 @@ method signatures with the user.**
 1. Read the test plan to identify the specific test case to implement.
 2. Read the relevant POMs to understand available methods.
 3. Write the test. Do NOT reference application source code to generate
-   locators — use only what the POMs provide.
+   locators — use only what the POMs provide and what playwright-cli verified.
 4. Run the tests to confirm they pass.
 
 **-> STOP. Share test results. Confirm the test passes and covers the
@@ -114,7 +155,8 @@ intended scenario.**
 - Plan stays in chat, never written to a file
 - If user provides test scenarios, use ONLY those — no extras
 - Timestamps in test identifiers for isolation
-- Validate locators via Playwright MCP, not by reading source code
+- Validate locators via playwright-cli live verification, not by reading source code
+- Reuse the same `-s=<session>` name for every playwright-cli call in a run; close it when done
 - Run tests after seeding data AND after writing tests
 - Set realistic scope — avoid feature creep
 
