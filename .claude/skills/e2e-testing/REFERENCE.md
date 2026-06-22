@@ -72,18 +72,6 @@ await page.waitForFunction(
 
 Checkboxes may default to **unchecked** regardless of visual state. Always verify and explicitly set checkbox state — never assume.
 
-### HTML5 Validation Bypass
-
-To test server-side validation without HTML5 blocking the submission:
-
-```typescript
-await page.evaluate(() => {
-  const form = document.querySelector('form[action="/example"]');
-  if (form) form.noValidate = true;
-});
-await submitButton.click();
-```
-
 Never use `form.submit()` directly — it bypasses the app's navigation interception and loses session cookies.
 
 ### Text Content
@@ -236,7 +224,7 @@ expect(response.url()).toContain("/session");  // correct for APIResponse
 ### Install
 
 ```bash
-npm install -g playwright-cli
+npm install -g @playwright/cli@latest
 playwright-cli install --skills
 ```
 
@@ -342,4 +330,4 @@ await page.screencast.stop();
 - Single submit method for both happy path and validation cases
 - Assuming checkbox default states without checking the model
 - Writing test plans to files — keep in chat
-- `form.submit()` to bypass HTML5 validation — breaks navigation interception and session
+- Any kind of HTML5 validation bypass, all interactions should go through the UI as a user would

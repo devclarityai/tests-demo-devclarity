@@ -40,10 +40,15 @@ playwright-cli --version
 playwright-cli install --skills
 
 # 3. Session name — use -s=<output> for all playwright-cli calls this run
-echo "ac-analysis-$RANDOM"
+node -e "console.log('ac-analysis-' + Date.now())"
 ```
 
-If `playwright-cli` is not found, install it first: `npm install -g @playwright/cli@latest && playwright-cli install --skills`
+If `playwright-cli` is not found, install it by running these two commands separately (chaining with `&&` can fail on Windows):
+
+```bash
+npm install -g @playwright/cli@latest
+playwright-cli install --skills
+```
 
 Use the output from step 3 as your `-s=` value for every `playwright-cli` call this run.
 
