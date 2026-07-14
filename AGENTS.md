@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents when working with code in this repository.
 
 ## Overview
 - Playwright (TypeScript) test suite targeting the **Demo DevClarity** app, a Rails-based application served at `BASE_URL` (configured via env). The suite covers critical end-to-end flows across clients, projects, calendar, and auth, with a small set of API tests for session handling.
@@ -25,6 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `clickAndGetAPIData.ts` — pairs a click with `waitForResponse` and captures both request and response
   - `arrays.ts` — small array utilities
 - TypeScript path aliases (defined in `tsconfig.json`): `@pages/*`, `@datafactory/*`, `@helpers/*`, `@fixtures/*`. Always import via these, not relative paths
+- Agent skills for this repo live under `.cursor/skills/`
 
 ## Stack Best Practices
 - Playwright `@playwright/test` ^1.60; Node 24, TypeScript 5
