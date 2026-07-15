@@ -1,7 +1,7 @@
 ---
 name: qa-context-personas
 description: Builds the context an AI needs to test an app well - product/area notes and user personas - and writes them into a reusable reference file. Use to turn a thin, generic AI run into a grounded one. Day 1 context live-build of the QA Foundational training.
-disable-model-invocation: true
+argument-hint: "[app area to build context for]"
 ---
 
 # QA Context & Personas

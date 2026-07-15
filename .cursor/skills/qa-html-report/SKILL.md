@@ -1,7 +1,7 @@
 ---
 name: qa-html-report
 description: Turns markdown or QA skill output into a simple, consistently styled standalone HTML report. Saves it to a qa-reports folder on the Desktop and opens it in the default browser. Works on Mac and Windows. Use when output from a qa-xxx skill (AC analysis, bug report, test cases, gap analysis) needs to be shared as an HTML file.
-disable-model-invocation: true
+argument-hint: "[file or content to convert] [optional title]"
 ---
 
 # QA HTML Report

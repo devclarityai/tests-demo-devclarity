@@ -1,7 +1,7 @@
 ---
 name: qa-gap-analysis
 description: Takes an existing set of test cases for a feature and returns what is missing - uncovered states, boundaries, negative paths, and unstated rules. Use when inheriting a test suite or auditing coverage. This is road 2 of the QA Foundational Day 2 "five roads."
-disable-model-invocation: true
+argument-hint: "[file or pasted list of existing test cases]"
 ---
 
 # QA Gap Analysis

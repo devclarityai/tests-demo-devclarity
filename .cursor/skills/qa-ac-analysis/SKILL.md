@@ -1,7 +1,7 @@
 ---
 name: qa-ac-analysis
 description: Reads a ticket's acceptance criteria and surfaces gaps, ambiguity, unstated assumptions, and missing cases - then ranks what to test by risk (severity x priority). Use before writing any tests, to interrogate the spec. Day 1 acceptance-criteria + risk block of the QA Foundational training.
-disable-model-invocation: true
+argument-hint: "[ticket file or pasted acceptance criteria]"
 ---
 
 # QA Acceptance-Criteria Analysis

@@ -1,7 +1,7 @@
 ---
 name: qa-bug-report
 description: Drafts a structured, reproducible bug report from behavior observed in the running app. Use after a tester reproduces a defect and wants a clean report another tester could file without a follow-up conversation. Day 2 bug-reporting block of the QA Foundational training.
-disable-model-invocation: true
+argument-hint: "[describe the bug, or point at observed behavior / a Playwright session]"
 ---
 
 # QA Bug Report

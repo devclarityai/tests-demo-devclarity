@@ -1,7 +1,7 @@
 ---
 name: qa-test-data
 description: Generates valid, boundary, and invalid test data sets for a feature by applying equivalence partitioning and boundary value analysis to a field schema or form spec. Use when a tester needs data to drive cases. Day 2 test-data block of the QA Foundational training.
-disable-model-invocation: true
+argument-hint: "[field schema, form spec, or description of the inputs]"
 ---
 
 # QA Test Data

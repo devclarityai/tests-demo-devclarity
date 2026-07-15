@@ -1,7 +1,7 @@
 ---
 name: qa-test-cases
 description: Turns a feature input (ticket + acceptance criteria, existing cases, a screenshot, observed app behavior, or a recorded walkthrough) into test cases or lighter test scenarios. Use when a tester needs to generate test coverage from any of the "five roads" inputs. Carried from Day 1 of the QA Foundational training; the road-1 input for Day 2.
-disable-model-invocation: true
+argument-hint: "[ticket file, image, or description of the input]"
 ---
 
 # QA Test Cases
