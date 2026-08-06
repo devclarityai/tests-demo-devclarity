@@ -5,7 +5,7 @@ description: Guides the creation of Playwright E2E tests from planning through i
 
 # Writing E2E Tests
 
-> Before starting, read `.claude/skills/e2e-testing/REFERENCE.md` for project-specific patterns, application context, POM rules, assertion conventions.
+> Before starting, read `.cursor/skills/e2e-testing/REFERENCE.md` for project-specific patterns, application context, POM rules, assertion conventions.
 
 ## Pre-flight checks
 

@@ -67,9 +67,11 @@ devenv.local.yaml
 .playwright-cli*
 .expect*
 
+# Ignore local AI tool settings
 .claude/settings.local.json
-# Ignore local Claude Code settings
 /.claude/settings.local.json
+.cursor/settings.local.json
+/.cursor/settings.local.json
 
 # Ignore Windows batch scripts (local development utilities)
 *.bat

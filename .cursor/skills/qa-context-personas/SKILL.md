@@ -79,7 +79,7 @@ a team before keeping - reject generic filler.
 ### Step 3: Write to the reference file
 
 Fold the area context and personas into the skill's reference file (e.g. a
-`reference/*.md` the QA skills read, or a layered CLAUDE.md / rules file). Keep it
+`reference/*.md` the QA skills read, or a layered AGENTS.md / `.cursor/rules` file). Keep it
 layered and lean. Flag what belongs in a rules file vs a skill reference.
 
 ### Step 4: Re-run and compare

@@ -1,13 +1,13 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents when working with code in this repository.
 
 ## Overview
 - Playwright (TypeScript) test suite targeting the **Demo DevClarity** app, a Rails project/capacity-planning dashboard served at `BASE_URL`. This repo holds tests only; the app lives elsewhere.
 - Test types: UI E2E (`tests/auth`, `tests/clients`, `tests/projects`, `tests/calendar`) and HTTP-level API tests (`tests/api`).
 - Environments: `BASE_URL` is read from `.playwright.env` (or the file at `ENV_PATH`); defaults to `http://localhost:3001`.
 - Critical journeys: login/session, client CRUD, project create/view, weekly work-block calendar.
-- Doubles as QA training material: `docs/qa-training/` (workshop tickets, specs, a deliberately broken test) and `.claude/skills/` (QA + Playwright authoring skills).
+- Doubles as QA training material: `docs/qa-training/` (workshop tickets, specs, a deliberately broken test) and `.cursor/skills/` (QA + Playwright authoring skills).
 
 ## Test Levels & Coverage Shape
 - E2E UI dominates. API coverage is thin: `tests/api/session.api.spec.ts` only (session + CSRF). The `/api/v1` bearer-token API documented in `docs/api/` has no tests yet.
@@ -23,6 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `lib/helpers/` — `auth.helper.ts` (programmatic login), `csrf.helper.ts` (scrapes the Rails `authenticity_token`), `clickAndGetAPIData.ts` (pairs a click with `waitForResponse`, returns request + response), `arrays.ts`.
 - Path aliases in `tsconfig.json`: `@pages/*`, `@datafactory/*`, `@helpers/*`, `@fixtures/*`. Import through these, never relative paths.
 - `lib/pages/resources.page.ts` exists with no spec behind it — a starting point, not dead code.
+- Agent skills for this repo live under `.cursor/skills/`.
 
 ## Stack Best Practices
 - `@playwright/test` ^1.60, TypeScript 5, Node 24. Chromium only; other browsers and mobile viewports are intentionally commented out in `playwright.config.ts`.
