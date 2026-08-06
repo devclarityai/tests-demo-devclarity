@@ -2,6 +2,8 @@
 
 Playwright tests against the Demo DevClarity app.
 
+Agent instructions for GitHub Copilot are documented in [AGENTS.md](AGENTS.md).
+
 ## Setup
 
 ```bash
