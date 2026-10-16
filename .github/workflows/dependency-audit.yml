@@ -15,7 +15,7 @@ jobs:
   osv-scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: osv-scanner (all lockfiles, any ecosystem)
         uses: google/osv-scanner-action/osv-scanner-action@v2.7.0
         with:
