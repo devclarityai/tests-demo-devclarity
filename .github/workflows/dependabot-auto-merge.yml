@@ -1,9 +1,12 @@
 name: Dependabot auto-merge
 
-# Auto-merges safe Dependabot PRs (patch + minor, including github-actions)
-# once the existing CI checks pass. Major version bumps are labeled and left
-# open for human review. Requires "Allow auto-merge" + branch protection with
-# required status checks on main so --auto waits for green CI.
+# Policy for Dependabot PRs (outputs from dependabot/fetch-metadata@v3):
+#   - patch + minor updates (any ecosystem)            -> approve + auto-merge
+#   - major updates to GitHub Actions (github_actions)
+#     or to dev-only deps (direct:development)         -> approve + auto-merge
+#   - any other major (direct:production, indirect)    -> label needs-review, leave open
+# Auto-merge waits for the required status checks on main, so CI still gates
+# every merge. Requires "Allow auto-merge" + branch protection on main.
 
 on: pull_request_target
 
@@ -33,8 +36,24 @@ jobs:
           gh pr review --approve "$PR_URL"
           gh pr merge --auto --squash "$PR_URL"
 
-      - name: Flag major updates for review
-        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+      - name: Enable auto-merge for major updates to CI actions and dev-only dependencies
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-major' &&
+          (steps.meta.outputs.package-ecosystem == 'github_actions' ||
+           steps.meta.outputs.dependency-type == 'direct:development')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr edit "$PR_URL" --remove-label "needs-review" || true
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash "$PR_URL"
+
+      - name: Flag other major updates for review
+        if: |
+          steps.meta.outputs.update-type == 'version-update:semver-major' &&
+          steps.meta.outputs.package-ecosystem != 'github_actions' &&
+          steps.meta.outputs.dependency-type != 'direct:development'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
